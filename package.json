@@ -1,0 +1,32 @@
+{
+  "name": "alleyway",
+  "version": "0.0.1",
+  "description": "Alleyway for Data Handling",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel/register test/**/*.js"
+  },
+  "dependencies": {
+    "expressioner": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "babel": "*",
+    "chokidar": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LoveKino/alleyway.git"
+  },
+  "keywords": [
+    "alleyway",
+    "compose",
+    "tunnel"
+  ],
+  "author": "ddchen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LoveKino/alleyway/issues"
+  },
+  "homepage": "https://github.com/LoveKino/alleyway#readme"
+}
