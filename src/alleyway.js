@@ -10,7 +10,7 @@
 import ast from "expressioner";
 
 import {
-    composeList, promiseFun
+    composeCross, promiseFun
 }
 from "./compose";
 
@@ -69,13 +69,7 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
         let fun2 = vs[1];
-
-        let res = [];
-        for (let i = 0; i < fun2.length; i++) {
-            let fun2Item = fun2[i];
-            res.push(composeList(fun2Item, fun1));
-        }
-        return res;
+        return composeCross(fun2, fun1);
     }
     operationMap[":"].execute = (left, right) => {
         let vs = getOperateValues([left], funMap, valueMap);
@@ -93,6 +87,16 @@ var handleSingle = (value, funMap, valueMap) => {
         }
     }
     return value;
+}
+
+var joinFuns = (values) => (...y) => {
+    let results = [];
+    for (let i = 0; i < values.length; i++) {
+        let value = values[i];
+        let res = value.apply(undefined, y);
+        results.push(res);
+    }
+    return results;
 }
 
 let operationMap = {
@@ -144,7 +148,7 @@ export default (setMap = {}) => {
         // special case.
         value = handleSingle(value, funMap, valueMap);
 
-        return value;
+        return joinFuns(value);
     }
 
     var execute = async(str, y) => {

@@ -10,7 +10,7 @@ describe("base", () => {
         });
 
         let v = op.translate("f1");
-        let res = await v[0](10, 20);
+        let res = await v(10, 20)[0];
         assert.equal(res, 30);
         done();
     });
@@ -26,7 +26,7 @@ describe("base", () => {
         });
 
         let v = op.translate("f1|f2");
-        let res = await v[0](10, 20);
+        let res = await v(10, 20)[0];
         assert.equal(res, 600);
         done();
     });
@@ -45,9 +45,9 @@ describe("base", () => {
         });
 
         let v = op.translate("f1,f2,f3");
-        let res1 = await v[0](10, 20);
-        let res2 = await v[1](10);
-        let res3 = await v[2](10);
+        let res1 = await v(10, 20)[0];
+        let res2 = await v(10)[1];
+        let res3 = await v(10)[2];
         assert.equal(res1, 30);
         assert.equal(res2, 200);
         assert.equal(res3, 5);
@@ -65,8 +65,8 @@ describe("base", () => {
         });
 
         let v = op.translate("(f1,f2)");
-        let res1 = await v[0](5, 4);
-        let res2 = await v[1](2, 1);
+        let res1 = await v(5, 4)[0];
+        let res2 = await v(2, 1)[1];
         assert.equal(res1, 9);
         assert.equal(res2, 1);
         done();
@@ -86,12 +86,36 @@ describe("base", () => {
         });
 
         let v = op.translate("(f1,f2)|f3");
-        let res1 = await v[0](5, 4);
-        let res2 = await v[0](2, 1);
-        let res3 = await v[0](6, 3);
+        let res1 = await v(5, 4)[0];
+        let res2 = await v(2, 1)[0];
+        let res3 = await v(6, 3)[0];
         assert.equal(res1, 9);
         assert.equal(res2, 3);
         assert.equal(res3, 27);
+        done();
+    });
+
+    it("() 3 calculation times", async(done) => {
+        let counter = 0;
+        let op = alleway({
+            "f1": function(a, b) {
+                counter++;
+                return a + b;
+            },
+            "f2": function(v) {
+                return v * 2;
+            },
+            "f3": function(v) {
+                return v - 10;
+            }
+        });
+
+        let v = op.translate("f1|(f2, f3)");
+        let res1 = await v(5, 4)[0];
+        let res2 = await v(2, 1)[1];
+        assert.equal(res1, 18);
+        assert.equal(res2, -7);
+        assert.equal(counter, 2)
         done();
     });
 
@@ -109,7 +133,7 @@ describe("base", () => {
         });
 
         let v = op.translate("f1|f2;f3");
-        let res = await v[0](10, 20);
+        let res = await v(10, 20)[0];
         assert.equal(res, -10);
         done();
     });
@@ -128,8 +152,8 @@ describe("base", () => {
         });
 
         let v = op.translate("f1|f2|f3");
-        let res = await v[0](1, 2);
-        let res2 = await v[0](3, 4);
+        let res = await v(1, 2)[0];
+        let res2 = await v(3, 4)[0];
         assert.equal(res, -4);
         assert.equal(res2, 4);
         done();
@@ -152,7 +176,7 @@ describe("base", () => {
         });
 
         let v = op.translate("((f1, f2) ,f3)|f4");
-        let res = await v[0](2);
+        let res = await v(2)[0];
         assert.equal(res, 3 + 4 + (-8));
         done();
     });
@@ -171,7 +195,7 @@ describe("base", () => {
         });
 
         let v = op.translate("(f1, f2)|f3 : q");
-        let res = await v[0](2);
+        let res = await v(2)[0];
         assert.equal(res, 2 + 1 + 2 * 2);
         done();
     });
@@ -190,7 +214,7 @@ describe("base", () => {
         });
 
         let v = op.translate("(f1, f2)|f3 : q ; q");
-        let res = await v[0](2);
+        let res = await v(2)[0];
         assert.equal(res, 2 + 1 + 2 * 2);
         done();
     });
@@ -211,7 +235,7 @@ describe("base", () => {
             }
         });
         let v = op.translate("(f1, f2)|f3 : q ; (q, f1)| f4");
-        let res = await v[0](2);
+        let res = await v(2)[0];
         assert.equal(res, 5);
         done();
     });
@@ -233,7 +257,7 @@ describe("base", () => {
         });
 
         let v = op.translate("(f1, f2)| (f3, f4) : q ; q| f4");
-        let res = await v[0](2);
+        let res = await v(2)[0];
         assert.equal(res, 5.25);
         done();
     });

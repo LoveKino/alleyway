@@ -12,7 +12,7 @@ describe("async", () => {
         });
 
         let v = op.translate("f1");
-        let res = await v[0](10, 20);
+        let res = await v(10, 20)[0];
         assert.equal(res, 30);
         done();
     });
@@ -31,7 +31,7 @@ describe("async", () => {
             }
         });
         let v = op.translate("f1|f2");
-        let res = await v[0](10, 20);
+        let res = await v(10, 20)[0];
         assert.equal(res, 60);
         done();
     });
@@ -52,7 +52,7 @@ describe("async", () => {
 
         let v = op.translate("f1|f2");
         try {
-            let res = await v[0](10, 20);
+            let res = await v(10, 20)[0];
         } catch (err) {
             assert.equal(err.toString(), "error happened!");
             done();
