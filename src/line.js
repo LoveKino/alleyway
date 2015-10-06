@@ -6,7 +6,6 @@ var commaJoin = (left, right) => (...y) => {
     let rightPros = right.apply(undefined, y);
     let counter = 0;
     let results = [];
-    results.__special__jointed = true;
 
     return new Promise((resolve, reject) => {
         leftPros.then(res => {
