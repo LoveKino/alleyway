@@ -8,30 +8,9 @@
  */
 
 import ast from "expressioner";
-
-import {
-    composeCross, promiseFun
-}
-from "./compose";
-
-
-var defineUnit = (name, method, funMap, operationMap) => {
-    // check name
-    for (let opName in operationMap) {
-        if (name.indexOf(opName) !== -1) {
-            throw new TypeError("unexpected name, contain special symbol '" +
-                opName + "' in " + name);
-        }
-    }
-    if (typeof method === "function") {
-        // convert to promise function, if it's not a promise function
-        funMap[name] = promiseFun(method);
-    } else {
-        throw new TypeError("unexpected type method, expect function. " + name);
-    }
-}
-
-var arraylike = v => v && typeof v === "object" && typeof v.length === "number";
+import { commaJoin } from "./line";
+import { composeJoin } from "./compose";
+import defineUnit from "./defineUnit";
 
 var getValue = (name, funMap, valueMap) => {
     let fun = name;
@@ -51,8 +30,6 @@ var getOperateValues = (y, funMap, valueMap) => {
     for (let i = 0; i < y.length; i++) {
         let name = y[i];
         let fun = getValue(name, funMap, valueMap);
-        if (!arraylike(fun))
-            fun = [fun];
         vs.push(fun);
     }
     return vs;
@@ -63,13 +40,13 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
         let fun2 = vs[1];
-        return fun1.concat(fun2);
+        return commaJoin(fun1, fun2);
     }
     operationMap["|"].execute = (...y) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
         let fun2 = vs[1];
-        return composeCross(fun2, fun1);
+        return composeJoin(fun1, fun2);
     }
     operationMap[":"].execute = (left, right) => {
         let vs = getOperateValues([left], funMap, valueMap);
@@ -82,21 +59,8 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
 var handleSingle = (value, funMap, valueMap) => {
     if (typeof value === "string") {
         value = getOperateValues([value], funMap, valueMap)[0];
-        for (var i = 0; i < value.length; i++) {
-            value[i] = promiseFun(value[i]);
-        }
     }
     return value;
-}
-
-var joinFuns = (values) => (...y) => {
-    let results = [];
-    for (let i = 0; i < values.length; i++) {
-        let value = values[i];
-        let res = value.apply(undefined, y);
-        results.push(res);
-    }
-    return results;
 }
 
 let operationMap = {
@@ -147,8 +111,7 @@ export default (setMap = {}) => {
 
         // special case.
         value = handleSingle(value, funMap, valueMap);
-
-        return joinFuns(value);
+        return value;
     }
 
     var execute = async(str, y) => {
