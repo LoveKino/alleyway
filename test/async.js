@@ -2,7 +2,7 @@ import assert from "assert";
 import alleway from "../index";
 
 describe("async", () => {
-    it("0", async(done) => {
+    it("base", async(done) => {
         let op = alleway({
             "f1": function(a, b) {
                 return new Promise(r => {

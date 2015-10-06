@@ -8,8 +8,9 @@
  */
 
 import ast from "expressioner";
-import { commaJoin } from "./line";
-import { composeJoin } from "./compose";
+import parallel from "./parallel";
+import compose from "./compose";
+import serial from "./serial";
 import defineUnit from "./defineUnit";
 
 var getValue = (name, funMap, valueMap) => {
@@ -40,13 +41,19 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
         let fun2 = vs[1];
-        return commaJoin(fun1, fun2);
+        return parallel(fun1, fun2);
+    }
+    operationMap["~"].execute = (...y) => {
+        let vs = getOperateValues(y, funMap, valueMap);
+        let fun1 = vs[0];
+        let fun2 = vs[1];
+        return serial(fun1, fun2);
     }
     operationMap["|"].execute = (...y) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
         let fun2 = vs[1];
-        return composeJoin(fun1, fun2);
+        return compose(fun1, fun2);
     }
     operationMap[":"].execute = (left, right) => {
         let vs = getOperateValues([left], funMap, valueMap);
@@ -66,6 +73,10 @@ var handleSingle = (value, funMap, valueMap) => {
 let operationMap = {
     ",": {
         priority: 10,
+        opNum: 2
+    },
+    "~": {
+        priority: 15,
         opNum: 2
     },
     "|": {

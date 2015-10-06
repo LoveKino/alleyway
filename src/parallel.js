@@ -1,7 +1,7 @@
 /**
  * after joining get a promise function
  */
-var commaJoin = (left, right) => (...y) => {
+var parallel = (left, right) => (...y) => {
     let leftPros = left.apply(undefined, y);
     let rightPros = right.apply(undefined, y);
     let counter = 0;
@@ -25,6 +25,4 @@ var commaJoin = (left, right) => (...y) => {
     });
 }
 
-export default {
-    commaJoin
-}
+export default parallel

@@ -1,7 +1,7 @@
 /**
  * after joining get a promise function
  */
-var composeJoin = (left, right) => (...y) => {
+var compose = (left, right) => (...y) => {
     let leftResult = left.apply(undefined, y);
     return new Promise((resolve, reject) => {
         leftResult.then(preVs => {
@@ -13,6 +13,4 @@ var composeJoin = (left, right) => (...y) => {
     });
 }
 
-export default {
-    composeJoin
-}
+export default compose;
