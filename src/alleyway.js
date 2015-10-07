@@ -11,6 +11,7 @@ import ast from "expressioner";
 import parallel from "./parallel";
 import compose from "./compose";
 import serial from "./serial";
+import high from "./high";
 import defineUnit from "./defineUnit";
 
 var getValue = (name, funMap, valueMap) => {
@@ -49,6 +50,11 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
         let fun2 = vs[1];
         return serial(fun1, fun2);
     }
+    operationMap["!"].execute = (...y) => {
+        let vs = getOperateValues(y, funMap, valueMap);
+        let fun = vs[0];
+        return high(fun);
+    }
     operationMap["|"].execute = (...y) => {
         let vs = getOperateValues(y, funMap, valueMap);
         let fun1 = vs[0];
@@ -78,6 +84,10 @@ let operationMap = {
     "~": {
         priority: 15,
         opNum: 2
+    },
+    "!": {
+        priority: 30,
+        opNum: 1
     },
     "|": {
         priority: 20,
@@ -125,14 +135,7 @@ export default (setMap = {}) => {
         return value;
     }
 
-    var execute = async(str, y) => {
-        let fun = translate(str);
-        let res = await fun.apply(undefined, y);
-        return res;
-    }
-
     return {
-        translate,
-        execute
+        translate
     }
 }
