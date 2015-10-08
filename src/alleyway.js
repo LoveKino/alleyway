@@ -12,7 +12,23 @@ import parallel from "./parallel";
 import compose from "./compose";
 import serial from "./serial";
 import high from "./high";
-import defineUnit from "./defineUnit";
+import packer from "./packer"
+
+var defineUnit = (name, method, funMap, operationMap) => {
+    // check name
+    for (let opName in operationMap) {
+        if (name.indexOf(opName) !== -1) {
+            throw new TypeError("unexpected name, contain special symbol '" +
+                opName + "' in " + name);
+        }
+    }
+    if (typeof method === "function") {
+        // convert to promise function, if it's not a promise function
+        funMap[name] = packer.pack(method);
+    } else {
+        throw new TypeError("unexpected type method, expect function. " + name);
+    }
+}
 
 var getValue = (name, funMap, valueMap) => {
     let fun = name;
