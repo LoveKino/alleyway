@@ -82,26 +82,4 @@ describe("assign", () => {
         assert.equal(res[0], 5.25);
         done();
     });
-
-    it(": counter", async(done) => {
-        let counter = 0;
-        let op = alleway({
-            "f1": function(a) {
-                counter++;
-                return a + 1;
-            },
-            "f2": function(a) {
-                console.log(a);
-                return a - 1;
-            }
-        });
-
-        let v = op.translate("f1:q;q|f2;q|f2");
-        let res = await v(2);
-        // console.log(counter);
-
-        // console.log(res);
-        // assert.equal(res[0], 2 + 1 + 2 * 2);
-        done();
-    });
 });
