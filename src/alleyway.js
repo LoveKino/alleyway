@@ -85,13 +85,6 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
     }
 }
 
-var handleSingle = (value, funMap, valueMap) => {
-    if (typeof value === "string") {
-        value = getOperateValues([value], funMap, valueMap)[0];
-    }
-    return value;
-}
-
 let operationMap = {
     ",": {
         priority: 10,
@@ -132,23 +125,35 @@ export default (setMap = {}) => {
 
     var translator = ast(operationMap);
 
-    var translate = (str) => {
-        let valueMap = {};
-        generateOperationExecutor(operationMap, funMap, valueMap);
-
+    var composeSentences = (str, valueMap) => {
         // get all expression sentences
         let sentences = str.split(";");
 
+        let values = [];
         for (var i = 0; i < sentences.length; i++) {
             let sentence = sentences[i].trim();
             if (sentence) {
                 var value = translator(sentences[i]).value;
+                if (typeof value === "string") {
+                    value = getOperateValues([value], funMap, valueMap)[0];
+                }
+                values.push(value);
             }
         }
 
-        // special case.
-        value = handleSingle(value, funMap, valueMap);
-        return value;
+        return (...y) => {
+            let result = null;
+            for (let i = 0; i < values.length; i++) {
+                result = values[i].apply(undefined, y);
+            }
+            return result;
+        }
+    }
+
+    var translate = (str) => {
+        let valueMap = {};
+        generateOperationExecutor(operationMap, funMap, valueMap);
+        return composeSentences(str, valueMap);
     }
 
     return {

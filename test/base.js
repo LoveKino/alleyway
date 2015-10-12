@@ -181,84 +181,29 @@ describe("base", () => {
         done();
     });
 
-    it(":", async(done) => {
+    it("( | )| ()", async(done) => {
         let op = alleway({
             "f1": function(a) {
-                return a + 1;
+                return a * 2;
             },
             "f2": function(v) {
-                return v * 2;
+                return v / 2;
             },
-            "f3": function(a, b) {
-                return a + b;
-            }
-        });
-
-        let v = op.translate("(f1, f2)|f3 : q");
-        let res = await v(2);
-        assert.equal(res[0], 2 + 1 + 2 * 2);
-        done();
-    });
-
-    it(": & ;", async(done) => {
-        let op = alleway({
-            "f1": function(a) {
-                return a + 1;
-            },
-            "f2": function(v) {
-                return v * 2;
-            },
-            "f3": function(a, b) {
-                return a + b;
-            }
-        });
-
-        let v = op.translate("(f1, f2)|f3 : q ; q");
-        let res = await v(2);
-        assert.equal(res[0], 2 + 1 + 2 * 2);
-        done();
-    });
-
-    it(": & ; 2", async(done) => {
-        let op = alleway({
-            "f1": function(a) {
-                return a + 1;
-            },
-            "f2": function(v) {
-                return v * 2;
-            },
-            "f3": function(a, b) {
-                return a + b;
+            "f3": function(v) {
+                return v + 1.5;
             },
             "f4": function(a, b) {
-                return (a + b) / 2;
-            }
-        });
-        let v = op.translate("(f1, f2)|f3 : q ; (q, f1)| f4");
-        let res = await v(2);
-        assert.equal(res[0], 5);
-        done();
-    });
-
-    it(": & ; 3", async(done) => {
-        let op = alleway({
-            "f1": function(a) {
-                return a + 1;
+                return a * b;
             },
-            "f2": function(v) {
-                return v * 2;
-            },
-            "f3": function(a, b) {
-                return a + b;
-            },
-            "f4": function(a, b) {
-                return (a + b) / 2;
+            "f5": function(a, b) {
+                return a - b;
             }
         });
 
-        let v = op.translate("(f1, f2)| (f3, f4) : q ; q| f4");
-        let res = await v(2);
-        assert.equal(res[0], 5.25);
+        let v = op.translate("(f1, f2 | f3) | (f4, f5)");
+        let res = await v(3);
+        assert.equal(res[0], 18);
+        assert.equal(res[1], 3);
         done();
     });
 });
