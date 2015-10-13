@@ -1,6 +1,6 @@
 {
   "name": "alleyway",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Alleyway for Data Handling",
   "main": "index.js",
   "scripts": {
