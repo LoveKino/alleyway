@@ -10,6 +10,7 @@
 import ast from "expressioner";
 import parallel from "./parallel";
 import compose from "./compose";
+import iterate from "./iterate"
 import serial from "./serial";
 import high from "./high";
 import packer from "./packer"
@@ -77,6 +78,12 @@ var generateOperationExecutor = (operationMap, funMap, valueMap) => {
         let fun2 = vs[1];
         return compose(fun1, fun2);
     }
+    operationMap[">"].execute = (...y) => {
+        let vs = getOperateValues(y, funMap, valueMap);
+        let fun1 = vs[0];
+        let fun2 = vs[1];
+        return iterate(fun1, fun2);
+    }
     operationMap[":"].execute = (left, right) => {
         let vs = getOperateValues([left], funMap, valueMap);
         left = vs[0];
@@ -99,6 +106,10 @@ let operationMap = {
         opNum: 1
     },
     "|": {
+        priority: 20,
+        opNum: 2
+    },
+    ">": {
         priority: 20,
         opNum: 2
     },
